@@ -4,6 +4,7 @@ import styles from "../styles/styles";
 import { Link } from "expo-router";
 
 export default function Home() {
+
   return (
     <View style={styles.container}>
       <Text>Home</Text>

@@ -521,7 +521,19 @@ headerShown: false,
 
 Entre otros mas
 
-Cuando modificamos este header en `_layout.tsx` en el componente `Stack` estamos afectandolo para todas las vistas, habra ocaciones en donde queramos que en cierta ruta ese header se vea diferentes, eso se puede lograr de 3 maneras, afectando al screen en `_layout.tsx`
+Cuando modificamos este header en `_layout.tsx` en el componente `Stack` estamos afectandolo para todas las vistas, habra ocaciones en donde queramos que en cierta ruta ese header se vea diferentes, eso se puede lograr de 3 maneras, afectando al screen en `_layout.tsx`.
+
+Para ver el ejemplo de estas tres formas debemos tener una estructura de carpetas asi:
+
+```
+myapp/
+├── app/
+│   ├── settings/
+│       ├── index.tsx        -> Ruta "/settings"
+│   ├── _layout.tsx
+│   ├── index.tsx            -> Ruta "/"
+│   ├── details.tsx          -> Ruta "/details"
+```
 
 ### Forma 1 con `Stack.screen` en `_layout.tsx`
 
@@ -550,7 +562,7 @@ En este caso en la ruta `"/" (app/index.tsx)` el header tendra estilos diferente
 
 Se debe tomar en cuenta que la propiedad `name` debe ser el nombre del archivo/ruta, es decir, en este caso la ruta `"/"` el nombre del archivo es `index` y en el caso de la vista `"/details"` el nombre del archivo es `details`, en caso de que nuestra ruta sea por carpeta como `/settings/index.tsx` el name debe de ser `settings/index`
 
-### Forma 2 con `Stack.Screen` en la ruta
+### Forma 2 con `Stack.Screen` en la ruta (`details.tsx`)
 
 ```typescript
 import { View, Text } from "react-native";
@@ -578,7 +590,7 @@ export default function Details() {
 }
 ```
 
-### Forma 3 con `useNavigation()`
+### Forma 3 con `useNavigation()` 
 
 ```typescript
 import { View, Text } from "react-native";
@@ -606,6 +618,56 @@ export default function Settings() {
 }
 ```
 
+## Headers Buttons
+
+El header del `Stack` tambien puede contener botones, que podemos personalizar por medio de la propiedad
+
+```typescript
+<Stack.Screen
+  options={{
+    headerRight: () => <Button title="button" />,
+  }}
+/>
+```
+
+## Remover vistas del stack
+
+Podemos eliminar vistas de la pila del `Stack` esto con ayuda de `useRouter()` o `router` y ambos tienen la opcion de eliminar n cantidad de vistas o todas.
+
+```typescript
+import { Pressable, Text, View } from "react-native";
+import React from "react";
+import { useRouter } from "expo-router";
+import styles from "../../styles/styles";
+
+export default function Settings() {
+  const router = useRouter();
+  return (
+    <View style={styles.container}>
+      <Pressable onPress={() => router.dismiss(1)}>
+        <Text>Volver al principio</Text>
+      </Pressable>
+    </View>
+  );
+}
+```
+
+En este ejmplo estmos retirando la ultima vista añadida a la pila, si en lugar de 1 usaramos otro numero estariamos eliminando n numero de vistas que estaban apiladas
+
+```typescript
+router.dismissAll();
+```
+
+Esto nos regresa a la primera vista de la pila
+
+## router VS useRouter
+
+Queda pendiente investigar la diferencia xd.
+
+Observacion, router no es necesario usarlo en un componente, useRouter debe usarse en un componente, es como si uno funcionara del lado del servidor y otro del cliente **Investigar mas**
+
+## Tabs
+
 ### Referencias
 
 La información y los ejemplos en este proyecto están basados en los recursos de la documentacion de [Expo](https://expo.dev/):
@@ -615,3 +677,5 @@ La información y los ejemplos en este proyecto están basados en los recursos d
 - [Navegacion entre rutas](https://docs.expo.dev/router/navigating-pages/)
 - [Tipado de rutas](https://docs.expo.dev/router/reference/typed-routes/)
 - [Layouts](https://docs.expo.dev/router/layouts/)
+- [Stack](https://docs.expo.dev/router/advanced/stack/)
+- [Tabs](https://docs.expo.dev/router/advanced/tabs/)

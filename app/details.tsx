@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, Button } from "react-native";
 import React from "react";
 import styles from "../styles/styles";
 import { Link, Stack } from "expo-router";
@@ -12,6 +12,7 @@ export default function Details() {
             backgroundColor: "#6F2CF6",
           },
           headerTintColor: "#fff",
+          headerRight: () => <Button title="button" />
         }}
       />
       <Text>Details</Text>
