@@ -17,6 +17,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     margin: 10,
   },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
 
 export default styles;

@@ -444,7 +444,167 @@ export default function PrivacyPolicy() {
   Tu navegador no admite la etiqueta de video.
 </video>
 
+El commit en donde se encuentra este ejemplo es: `6e937594b8dd86c24c66c5209baa319bab29e7ba`
+
 En este ejemplo podemos observar que el header y footer del `RootLayout` solo aparece en la rutas que estan dentro del grupo `(app)`
+
+## Stack
+
+Android y IOS, tienen diferentes maneras de animar la forma en la que se apilan las vistas, en Android se apilan sobre la pantalla actual, en IOS se animan desde la derecha. Borrare el ejercicio anterior.
+
+Dejando la siguiente estructura:
+
+```
+myapp/
+├── app/
+│   ├── _layout.tsx
+│   ├── index.tsx
+│   ├── details.tsx
+```
+
+Esta estructura produce un layout donde el `index.tsx` es la primera ruta en el stack
+
+### `_layout.tsx`
+
+```typescript
+import React from "react";
+import { Stack } from "expo-router";
+
+export default function RootLayout() {
+  return <Stack />;
+}
+```
+
+### `index.tsx`
+
+```typescript
+import { View, Text } from "react-native";
+import React from "react";
+import styles from "../styles/styles";
+
+export default function Home() {
+  return (
+    <View style={styles.container}>
+      <Text>Home</Text>
+    </View>
+  );
+}
+```
+
+El componente `Stack` nos agrega automáticamente un header con el nombre de la ruta en la que estamos posicionados, lo cual facilita la navegación dentro de la aplicación. Además, el `Stack` contiene un prop llamado `screenOptions`, que ofrece múltiples propiedades configurables. Estas propiedades permiten personalizar aspectos como la visibilidad del header, el título de la pantalla, las animaciones de transición, y otros comportamientos específicos de cada pantalla dentro del stack.
+
+- Cambio de color del background del header
+
+```typescript
+headerStyle: {
+          backgroundColor: "#8147ff",
+        }
+```
+
+- Cambio del color del texto del header
+
+```typescript
+headerTintColor: "#ffffff",
+```
+
+- Hacer transparente el header
+
+```typescript
+headerTransparent: true,
+```
+
+- Desaparece el header
+
+```typescript
+headerShown: false,
+```
+
+Entre otros mas
+
+Cuando modificamos este header en `_layout.tsx` en el componente `Stack` estamos afectandolo para todas las vistas, habra ocaciones en donde queramos que en cierta ruta ese header se vea diferentes, eso se puede lograr de 3 maneras, afectando al screen en `_layout.tsx`
+
+### Forma 1 con `Stack.screen` en `_layout.tsx`
+
+```typescript
+import React from "react";
+import { Stack } from "expo-router";
+
+export default function RootLayout() {
+  return (
+    <Stack>
+      <Stack.Screen
+        name="index"
+        options={{
+          headerStyle: {
+            backgroundColor: "#f4511e",
+          },
+          headerTintColor: "#fff",
+        }}
+      />
+    </Stack>
+  );
+}
+```
+
+En este caso en la ruta `"/" (app/index.tsx)` el header tendra estilos diferentes que en `"/details" (app/details.tsx)`.
+
+Se debe tomar en cuenta que la propiedad `name` debe ser el nombre del archivo/ruta, es decir, en este caso la ruta `"/"` el nombre del archivo es `index` y en el caso de la vista `"/details"` el nombre del archivo es `details`, en caso de que nuestra ruta sea por carpeta como `/settings/index.tsx` el name debe de ser `settings/index`
+
+### Forma 2 con `Stack.Screen` en la ruta
+
+```typescript
+import { View, Text } from "react-native";
+import React from "react";
+import styles from "../styles/styles";
+import { Link, Stack } from "expo-router";
+
+export default function Details() {
+  return (
+    <View style={styles.container}>
+      <Stack.Screen
+        options={{
+          headerStyle: {
+            backgroundColor: "#6F2CF6",
+          },
+          headerTintColor: "#fff",
+        }}
+      />
+      <Text>Details</Text>
+      <Link href="/settings" style={styles.link}>
+        Go to Settings
+      </Link>
+    </View>
+  );
+}
+```
+
+### Forma 3 con `useNavigation()`
+
+```typescript
+import { View, Text } from "react-native";
+import React, { useEffect } from "react";
+import { useNavigation } from "expo-router";
+
+export default function Settings() {
+  const nav = useNavigation();
+
+  useEffect(() => {
+    nav.setOptions({
+      title: "XD",
+      headerStyle: {
+        backgroundColor: "#ff9878",
+      },
+      headerTintColor: "#fff",
+    });
+  }, []);
+
+  return (
+    <View>
+      <Text>Settings</Text>
+    </View>
+  );
+}
+```
 
 ### Referencias
 
