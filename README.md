@@ -560,7 +560,9 @@ export default function RootLayout() {
 
 En este caso en la ruta `"/" (app/index.tsx)` el header tendra estilos diferentes que en `"/details" (app/details.tsx)`.
 
-Se debe tomar en cuenta que la propiedad `name` debe ser el nombre del archivo/ruta, es decir, en este caso la ruta `"/"` el nombre del archivo es `index` y en el caso de la vista `"/details"` el nombre del archivo es `details`, en caso de que nuestra ruta sea por carpeta como `/settings/index.tsx` el name debe de ser `settings/index`
+### Propiedad `name`
+
+Se debe tomar en cuenta que la propiedad `name` debe ser el nombre del carpeta/archivo, es decir, en este caso la ruta `"/"` el nombre del archivo es `index` y en el caso de la vista `"/details"` el nombre del archivo es `details`, en caso de que nuestra ruta sea por carpeta como `/settings/index.tsx` el `name` debe de ser `settings/index`
 
 ### Forma 2 con `Stack.Screen` en la ruta (`details.tsx`)
 
@@ -590,7 +592,7 @@ export default function Details() {
 }
 ```
 
-### Forma 3 con `useNavigation()` 
+### Forma 3 con `useNavigation()`
 
 ```typescript
 import { View, Text } from "react-native";
@@ -666,7 +668,75 @@ Queda pendiente investigar la diferencia xd.
 
 Observacion, router no es necesario usarlo en un componente, useRouter debe usarse en un componente, es como si uno funcionara del lado del servidor y otro del cliente **Investigar mas**
 
+### Practica
+
+El commit en donde se encuentra el codigo sobre las 3 formas de editar el header es: `d0a8d096534e102051753969051f850d5d3ff701`
+
 ## Tabs
+
+Para continuar con `Tabs` regresaremos nuestro proyecto a la siguiente estructura
+
+```
+myapp/
+├── app/
+│   ├── _layout.tsx
+│   ├── (tabs)/
+│       ├── index.tsx            -> Ruta "/"
+│       ├── settings.tsx         -> Ruta "/settings"
+│       ├── about.tsx            -> Ruta "/about"
+│       ├── _layout.tsx          -> layout que se mostarar en las vistas del grupo (tabs)
+```
+
+### Observacion en `app/_layout.tsx`
+
+```typescript
+import React from "react";
+import { Stack } from "expo-router";
+
+export default function RootLayout() {
+  return (
+    <Stack>
+      <Stack.Screen
+        name="(tabs)"
+        options={{
+          headerShown: false,
+        }}
+      />
+    </Stack>
+  );
+}
+```
+
+Cuando la propiedad `name` de `Stack.Screen` no contiene el nombre del archivo [Como se vio en la seccion de la propiedad name](#propiedad-name) es porque hace referencia al layout.
+
+Por ejemplo en este caso `name=(tabs)` es valido porque no esta haciendo referencia a una ruta sino a un layout.
+
+### Otra observacion
+
+La configuracion `headerShown: false` esta haciendo que no se muestre el header en ninguna vista del grupo `(tabs)`
+
+### `app/(tabs)/layout.tsx`
+
+```typescript
+import React from "react";
+import { Tabs } from "expo-router";
+
+export default function TabsLayout() {
+  return <Tabs />;
+}
+```
+
+En el resto de nuestros archivos `(tabs)/index.tsx`, `(tabs)/settings.tsx`, `(tabs)/about.tsx` solo colocaremos una estruturca como esta:
+
+```typescript
+return (
+  <View style={styles.container}>
+    <Text>[NOMBRE DE LA RUTA]</Text>
+  </View>
+);
+```
+
+Con esto ya se nos generara una tab bar con las rutas de index, about y settings junto con la navegacion entre estas vistas
 
 ### Referencias
 
