@@ -738,6 +738,189 @@ return (
 
 Con esto ya se nos generara una tab bar con las rutas de index, about y settings junto con la navegacion entre estas vistas
 
+### Ocultar ruta de un grupo con `Tab`
+
+En la situacion en la que quieras una vista que pertenezca a un grupo pero que no tenga su espacio en el componente `Tab`, podemos ocultar su tab.
+
+Supongamos una vista de terminos y condiciones, la cual no quisieramos que tuviera una tab es decir
+
+```
+myapp/
+├── app/
+│   ├── _layout.tsx
+│   ├── (tabs)/
+│       ├── index.tsx            -> Ruta "/"
+│       ├── settings.tsx         -> Ruta "/settings"
+│       ├── about.tsx            -> Ruta "/about"
+│       ├── terms-of-policy.tsx  -> Ruta "/terms-of-policy"
+│       ├── _layout.tsx          -> layout que se mostarar en las vistas del grupo (tabs)
+```
+
+### `(app)/_layout.tsx`
+
+```typescript
+import React from "react";
+import { Tabs } from "expo-router";
+
+export default function TabsLayout() {
+  return (
+    <Tabs>
+      <Tabs.Screen
+        name="terms-of-policy"
+        options={{
+          href: null,
+        }}
+      />
+    </Tabs>
+  );
+}
+```
+
+y en nuestra ruta `(tabs)/about.tsx` podemos colocar un `Link` para navegar a esta ruta
+
+```typescript
+import { View, Text } from "react-native";
+import React from "react";
+import styles from "../../styles/styles";
+import { Link } from "expo-router";
+
+export default function about() {
+  return (
+    <View style={styles.container}>
+      <Text>about</Text>
+      <Link href={"/(tabs)/terms-of-policy"}>Read terms of the services</Link>
+    </View>
+  );
+}
+```
+
+### Rutas dinamicas con tab
+
+Supongamos que tengo una ruta dinamica dentro de `(tabs)` llamada `[user-id].tsx` si queremos que esta vista tenga una tab que nos mande a esta vista:
+
+```typescript
+import React from "react";
+import { Tabs } from "expo-router";
+
+export default function TabsLayout() {
+  return (
+    <Tabs>
+      {/* Aqui va la tab de terms-of-policy */}
+      <Tabs.Screen
+        name="[user-id]"
+        options={{
+          href: "/jorge123",
+        }}
+      />
+    </Tabs>
+  );
+}
+```
+
+Otra forma de hacerlo es
+
+```typescript
+import React from "react";
+import { Tabs } from "expo-router";
+
+export default function TabsLayout() {
+  return (
+    <Tabs>
+      {/* Aqui va la tab de terms-of-policy */}
+      <Tabs.Screen
+        name="[user-id]"
+        options={{
+          href: {
+            pathname: "/[user-id]",
+            params: {
+              "user-id": "jorge123",
+            },
+          },
+        }}
+      />
+    </Tabs>
+  );
+}
+```
+
+Si en esta vista de `[user-id].tsx` quisieramos recuperar el valor del parametro podemos usar los hook `useRouteInfo()` y `useLocalSearchParams()`
+
+### Diferencias entre `useRouteInfo()` y `useLocalSearchParams()`
+
+Si en nuestra ruta `[user-id].tsx` hacemos una impresion de estos objetos asi:
+
+```typescript
+const routeInfo = useRouteInfo();
+
+console.log(routeInfo);
+
+/* Salida */
+{
+  "isIndex": false,
+  "params": {
+    "user-id": "jorge123"
+    },
+  "pathname": "/jorge123",
+  "segments": ["(tabs)", "[user-id]"],
+  "unstable_globalHref": "/jorge123"
+}
+```
+
+```typescript
+const localSearch = useLocalSearchParams()
+
+console.log(localSearch);
+
+/* Salida */
+{"user-id": "jorge123"}
+```
+
+Es decir que `useLocalSearchParams()` es mas especifico sobre los parametros de la ruta local, y `useRouteInfo()` nos muestra una informacion mas amplia de la ruta
+
+### `(tabs)/[user-id].tsx`
+
+```tsx
+import { useLocalSearchParams } from "expo-router";
+import { useRouteInfo } from "expo-router/build/hooks";
+
+export default function UserId() {
+  const routeInfo = useRouteInfo();
+  const localSearch = useLocalSearchParams();
+
+  return (
+    <View style={styles.container}>
+      <Text>{routeInfo.params["user-id"]}</Text>
+      <Text>{localSearch["user-id"]}</Text>
+    </View>
+  );
+}
+```
+
+### Conclusion de tabs
+
+Deberiamos de estar terminando esta seccion con esta estructura de archivos:
+
+```
+myapp/
+├── app/
+│   ├── _layout.tsx
+│   ├── (tabs)/
+│       ├── index.tsx            -> Ruta "/"
+│       ├── settings.tsx         -> Ruta "/settings"
+│       ├── about.tsx            -> Ruta "/about"
+│       ├── terms-of-policy.tsx  -> Ruta "/terms-of-policy"
+│       ├── [user-id].tsx        -> Ruta "/[user-id]"
+│       ├── _layout.tsx          -> layout que se mostarar en las vistas del grupo (tabs)
+```
+
+## Drawer (navegacion por barra lateral)
+
+```bash
+npx expo install @react-navigation/drawer react-native-gesture-handler react-native-reanimated
+```
+
+
+
 ### Referencias
 
 La información y los ejemplos en este proyecto están basados en los recursos de la documentacion de [Expo](https://expo.dev/):
